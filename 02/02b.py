@@ -9,8 +9,8 @@ def result(a, b):
 
 def scores(line):
     a, b = line.split(' ')
-    a = ord(opp) - 65
-    b = ord(me) - 88
+    a = ord(a) - 65
+    b = ord(b) - 88
     score = 1 + b + result(a, b)
     b2 = (a + b + 2) % 3
     score2 = 1 + b2 + result(a, b)
