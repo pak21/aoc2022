@@ -5,27 +5,26 @@ import sys
 import numpy as np
 
 DIRECTIONS = {
-    'R': (1, 0),
-    'U': (0, -1),
-    'L': (-1, 0),
-    'D': (0, 1)
+    'R': np.array([1, 0]),
+    'U': np.array([0, -1]),
+    'L': np.array([-1, 0]),
+    'D': np.array([0, 1])
 }
 
-worm = [(0, 0)] * int(sys.argv[2])
+worm = [np.array([0, 0])] * int(sys.argv[2])
 seen = set()
 
 with open(sys.argv[1]) as f:
     for l in [x.rstrip() for x in f]:
         direction, num = l.split()
 
-        for i in range(int(num)):
-            worm[0] = (worm[0][0] + DIRECTIONS[direction][0], worm[0][1] + DIRECTIONS[direction][1])
-            for j in range(len(worm) - 1):
-                dx = worm[j][0] - worm[j+1][0]
-                dy = worm[j][1] - worm[j+1][1]
-                mx, my = (np.sign(dx), np.sign(dy)) if abs(dx) == 2 or abs(dy) == 2 else (0, 0)
-                worm[j+1] = (worm[j+1][0] + mx, worm[j+1][1] + my)
+        for _ in range(int(num)):
+            worm[0] = worm[0] + DIRECTIONS[direction]
+            for i in range(len(worm) - 1):
+                diff = worm[i] - worm[i+1]
+                if np.max(np.abs(diff)) == 2:
+                    worm[i+1] = worm[i+1] + np.sign(diff)
 
-            seen.add(worm[-1])
+            seen.add(tuple(worm[-1]))
 
 print(len(seen))
