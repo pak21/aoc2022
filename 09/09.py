@@ -11,11 +11,10 @@ DIRECTIONS = {
     'D': (0, 1)
 }
 
-with open(sys.argv[1]) as f:
-    worm = [(0, 0)] * int(sys.argv[2])
-    seen = set()
+worm = [(0, 0)] * int(sys.argv[2])
+seen = set()
 
-    moves = []
+with open(sys.argv[1]) as f:
     for l in [x.rstrip() for x in f]:
         direction, num = l.split()
 
@@ -24,12 +23,9 @@ with open(sys.argv[1]) as f:
             for j in range(len(worm) - 1):
                 dx = worm[j][0] - worm[j+1][0]
                 dy = worm[j][1] - worm[j+1][1]
-                if abs(dx) == 2 or abs(dy) == 2:
-                    mx, my = np.sign(dx), np.sign(dy)
-                else:
-                    mx, my = 0, 0
+                mx, my = (np.sign(dx), np.sign(dy)) if abs(dx) == 2 or abs(dy) == 2 else (0, 0)
                 worm[j+1] = (worm[j+1][0] + mx, worm[j+1][1] + my)
 
             seen.add(worm[-1])
 
-    print(len(seen))
+print(len(seen))
