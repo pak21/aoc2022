@@ -4,22 +4,22 @@ import sys
 
 import vm
 
-def pretick(state):
-    video = '#' if abs((state['t'] % 40) - state['x']) <= 1 else ' '
-    return {**state, 'part2': state['part2'] + video}
+def pretick(vm0, puzzle0):
+    video = '#' if abs((vm0['t'] % 40) - vm0['x']) <= 1 else ' '
+    return {**puzzle0, 2: puzzle0[2] + video}
 
-def posttick(state):
-    match state['t'] % 40:
+def posttick(vm0, puzzle0):
+    match vm0['t'] % 40:
         case 0:
-            return {**state, 'part2': state['part2'] + '\n'}
+            return {**puzzle0, 2: puzzle0[2] + '\n'}
         case 20:
-            return {**state, 'part1': state['part1'] + state['t'] * state['x']}
+            return {**puzzle0, 1: puzzle0[1] + vm0['t'] * vm0['x']}
         case _:
-            return state
+            return puzzle0
 
 interpreter = vm.Interpreter(pretick, posttick)
 interpreter.parse(sys.argv[1])
-final_state = interpreter.run({'t': 0, 'x': 1, 'part1': 0, 'part2': ''})
+final_vm, final_puzzle = interpreter.run({'t': 0, 'x': 1}, {1: 0, 2: ''})
 
-print(final_state['part1'])
-print(final_state['part2'])
+for v in final_puzzle.values():
+    print(v)
