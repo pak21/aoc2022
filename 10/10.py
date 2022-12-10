@@ -2,47 +2,24 @@
 
 import sys
 
-state = {
-    't': 0,
-    'x': 1,
-    'part1': 0, 
-    'part2': ''
-}
+import vm
 
-def clocktick(state):
-    state['part2'] += '#' if abs((state['t'] % 40) - state['x']) <= 1 else ' '
+def pretick(state):
+    video = '#' if abs((state['t'] % 40) - state['x']) <= 1 else ' '
+    return {**state, 'part2': state['part2'] + video}
 
-    state['t'] += 1
-
+def posttick(state):
     match state['t'] % 40:
         case 0:
-            state['part2'] += '\n'
+            return {**state, 'part2': state['part2'] + '\n'}
         case 20:
-            state['part1'] += state['t'] * state['x']
-
-def noop(state):
-    clocktick(state)
-
-def addx(state, a):
-    clocktick(state)
-    clocktick(state)
-    state['x'] += a
-
-def parse(words):
-    match words[0]:
-        case 'noop':
-            return lambda s: noop(s)
-        case 'addx':
-            return lambda s: addx(s, int(words[1]))
+            return {**state, 'part1': state['part1'] + state['t'] * state['x']}
         case _:
-            raise Exception(f'Unknown opcode {words[0]}')
+            return state
 
-program = []
-with open(sys.argv[1]) as f:
-    program = [parse(l.rstrip().split()) for l in f]
+interpreter = vm.Interpreter(pretick, posttick)
+interpreter.parse(sys.argv[1])
+final_state = interpreter.run({'t': 0, 'x': 1, 'part1': 0, 'part2': ''})
 
-for opcode in program:
-    opcode(state)
-
-print(state['part1'])
-print(state['part2'])
+print(final_state['part1'])
+print(final_state['part2'])
