@@ -10,19 +10,17 @@ state = {
 }
 
 def clocktick(state):
-    video = '#' if abs((state['t'] % 40) - state['x']) <= 1 else ' '
-    state['part2'] += video
+    state['part2'] += '#' if abs((state['t'] % 40) - state['x']) <= 1 else ' '
 
     state['t'] += 1
 
     match state['t'] % 40:
         case 0:
             state['part2'] += '\n'
-
         case 20:
             state['part1'] += state['t'] * state['x']
 
-def noop(state, a):
+def noop(state):
     clocktick(state)
 
 def addx(state, a):
@@ -30,25 +28,21 @@ def addx(state, a):
     clocktick(state)
     state['x'] += a
 
-INSTRUCTIONS = {
-    'addx': addx,
-    'noop': noop,
-}
+def parse(words):
+    match words[0]:
+        case 'noop':
+            return lambda s: noop(s)
+        case 'addx':
+            return lambda s: addx(s, int(words[1]))
+        case _:
+            raise Exception(f'Unknown opcode {words[0]}')
 
 program = []
 with open(sys.argv[1]) as f:
-    for l in [x.rstrip() for x in f]:
-        words = l.split()
-        match words[0]:
-            case 'noop':
-                program.append((noop, None))
-            case 'addx':
-                program.append((addx, int(words[1])))
-            case _:
-                raise Exception(f'Unknown opcode {words[0]}')
+    program = [parse(l.rstrip().split()) for l in f]
 
-for opcode, a in program:
-    opcode(state, a)
+for opcode in program:
+    opcode(state)
 
 print(state['part1'])
 print(state['part2'])
