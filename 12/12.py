@@ -18,7 +18,7 @@ def bfs(grid, start, allow_fn, end_fn):
 
     while todo and not done:
         here, moves = todo.pop(0)
-        if end_fn(here, grid[here]):
+        if end_fn(here):
             done = True
             break
         for d in DIRS:
@@ -44,5 +44,5 @@ with open(sys.argv[1]) as f:
     start = tuple([start[0][0], start[1][0]])
     end = tuple([end[0][0], end[1][0]])
 
-    print(bfs(grid, start, lambda a, b: a - b <= 1, lambda l, v: l == end))
-    print(bfs(grid, end, lambda a, b: b - a <= 1, lambda l, v: v == 0))
+    print(bfs(grid, start, lambda a, b: a - b <= 1, lambda a: a == end))
+    print(bfs(grid, end, lambda a, b: b - a <= 1, lambda a: grid[a] == 0))
