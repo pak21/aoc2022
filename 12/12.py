@@ -35,13 +35,11 @@ def bfs(grid, start, allow_fn, end_fn):
     return moves
 
 with open(sys.argv[1]) as f:
-    grid = np.array([[c for c in l.strip()] for l in f])
-    start = np.where(grid == 'S')
-    end = np.where(grid == 'E')
-    grid[start] = 'a'
-    grid[end] = 'z'
-
-    grid = np.vectorize(lambda c: ord(c) - 97)(grid)
+    grid = np.array([[ord(c) - 97 for c in l.strip()] for l in f])
+    start = np.where(grid == ord('S') - 97)
+    end = np.where(grid == ord('E') - 97)
+    grid[start] = 0
+    grid[end] = 25
 
     start = tuple([start[0][0], start[1][0]])
     end = tuple([end[0][0], end[1][0]])
