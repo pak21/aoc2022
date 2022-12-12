@@ -47,4 +47,4 @@ with open(sys.argv[1]) as f:
     end = tuple([end[0][0], end[1][0]])
 
     print(bfs(grid, start, lambda a, b: a - b <= 1, lambda l, v: l == end))
-    print(bfs(grid, end, lambda a, b: a - b >= -1, lambda l, v: v == 0))
+    print(bfs(grid, end, lambda a, b: b - a <= 1, lambda l, v: v == 0))
