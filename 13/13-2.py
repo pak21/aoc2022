@@ -4,11 +4,6 @@ import builtins
 import functools
 import sys
 
-import numpy as np
-
-def parse(s):
-    return eval(s)
-
 def sign(l, r):
     return -1 if l < r else (0 if l == r else 1)
 
@@ -31,12 +26,10 @@ def compare_lists(l, r):
 
     return sign(len(l), len(r))
 
-import functools
-
 with open(sys.argv[1]) as f:
     extra_a = [[2]]
     extra_b = [[6]]
-    items = [parse(l.rstrip()) for l in f if l != '\n']
+    items = [eval(l) for l in f if l != '\n']
     items = items + [extra_a, extra_b]
     s = sorted(items, key=functools.cmp_to_key(compare_lists))
     print( (s.index(extra_a) + 1) * (s.index(extra_b) + 1) )

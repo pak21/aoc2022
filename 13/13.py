@@ -3,9 +3,6 @@
 import builtins
 import sys
 
-def parse(s):
-    return eval(s)
-
 def sign(l, r):
     return -1 if l < r else (0 if l == r else 1)
 
@@ -33,8 +30,8 @@ with open(sys.argv[1]) as f:
     part1 = 0
     for i, pair in enumerate(pairs, 1):
         lines = pair.split('\n')
-        left = parse(lines[0])
-        right = parse(lines[1])
+        left = eval(lines[0])
+        right = eval(lines[1])
         if compare_lists(left, right) == -1:
             part1 += i
     print(part1)
