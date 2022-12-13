@@ -3,13 +3,10 @@
 import builtins
 import sys
 
-def sign(l, r):
-    return -1 if l < r else (0 if l == r else 1)
-
 def compare_items(l, r):
     match (type(l), type(r)):
         case (builtins.int, builtins.int):
-            return sign(l, r)
+            return l - r
         case (builtins.list, builtins.list):
             return compare_lists(l, r)
         case (builtins.int, builtins.list):
@@ -23,15 +20,9 @@ def compare_lists(l, r):
         if c:
             return c
 
-    return sign(len(l), len(r))
+    return len(l) - len(r)
 
 with open(sys.argv[1]) as f:
-    pairs = f.read().rstrip().split('\n\n')
-    part1 = 0
-    for i, pair in enumerate(pairs, 1):
-        lines = pair.split('\n')
-        left = eval(lines[0])
-        right = eval(lines[1])
-        if compare_lists(left, right) == -1:
-            part1 += i
-    print(part1)
+    pairs = [[eval(x) for x in pair.split('\n')] for pair in f.read().rstrip().split('\n\n')]
+
+print(sum([i for i, (l, r) in enumerate(pairs, 1) if compare_lists(l, r) < 0]))

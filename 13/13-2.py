@@ -4,13 +4,10 @@ import builtins
 import functools
 import sys
 
-def sign(l, r):
-    return -1 if l < r else (0 if l == r else 1)
-
 def compare_items(l, r):
     match (type(l), type(r)):
         case (builtins.int, builtins.int):
-            return sign(l, r)
+            return l - r
         case (builtins.list, builtins.list):
             return compare_lists(l, r)
         case (builtins.int, builtins.list):
@@ -24,12 +21,12 @@ def compare_lists(l, r):
         if c:
             return c
 
-    return sign(len(l), len(r))
+    return len(l) - len(r)
 
+extra_a = [[2]]
+extra_b = [[6]]
 with open(sys.argv[1]) as f:
-    extra_a = [[2]]
-    extra_b = [[6]]
-    items = [eval(l) for l in f if l != '\n']
-    items = items + [extra_a, extra_b]
-    s = sorted(items, key=functools.cmp_to_key(compare_lists))
-    print( (s.index(extra_a) + 1) * (s.index(extra_b) + 1) )
+    items = [eval(l) for l in f if l != '\n'] + [extra_a, extra_b]
+
+s = sorted(items, key=functools.cmp_to_key(compare_lists))
+print( (s.index(extra_a) + 1) * (s.index(extra_b) + 1) )
