@@ -39,7 +39,7 @@ while not done:
             grid.add((x, y))
             sand = sand + 1
 
-            if x == 500 and y == 0:
+            if (x, y) == (500, 0):
                 print(sand)
                 done = True
 
