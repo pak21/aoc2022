@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import json
 import sys
 
 def append_maybe_int(l, maybe_int):
@@ -27,7 +28,7 @@ def parse(s):
 with open(sys.argv[1]) as f:
     for line in [l.rstrip() for l in f if l != '\n']:
         parsed = parse(line)
-        cheat = eval(line)
+        cheat = json.loads(line)
         if parsed != cheat:
             print(f'Parsing failure for "{line}"')
             print(f'     Got {parsed}')
