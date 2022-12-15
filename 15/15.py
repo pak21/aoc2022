@@ -42,7 +42,7 @@ for row in range(0, 4000000):
         max_x = max(max_x, new_max_x)
 
     if row == target_row:
-        part1 = max_x - min_x + 1 - len([x for x in beacons_on_target_row if x >= min_x and x <= max_x])
+        part1 = max_x - min_x + 1 - len(beacons_on_target_row)
         
     if part1 and part2:
         break
