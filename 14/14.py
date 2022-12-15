@@ -13,6 +13,8 @@ with open(sys.argv[1]) as f:
             elif y0 == y1:
                 for x in range(min(x0, x1), max(x0, x1)+1):
                     grid.add((x, y0))
+            else:
+                raise Exception(f'Diagonal line from ({x0}, {y0}) to ({x1}, {y1})?')
 
 floor = max([y for _, y in grid]) + 2
 
