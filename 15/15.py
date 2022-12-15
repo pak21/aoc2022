@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 
-import collections
 import sys
 
-import numpy as np
+beacons_on_target_row = set()
+
+target_row = int(sys.argv[2])
 
 data = []
 with open(sys.argv[1]) as f:
@@ -13,20 +14,37 @@ with open(sys.argv[1]) as f:
         sy = int(f[3][2:-1])
         nx = int(f[8][2:-1])
         ny = int(f[9][2:])
-        data.append(((sx, sy), (nx, ny)))
+        dist = abs(nx-sx) + abs(ny-sy)
+        data.append(((sx, sy), dist))
 
-empty = set()
-for (sx, sy), (nx, ny) in data:
-    dist = abs(nx-sx) + abs(ny-sy)
-    for y in range(sy-dist, sy+dist+1):
-        dx = dist-abs(y-sy)
-        x0 = sx-dx
-        x1 = sx+dx
-        for x in range(x0, x1+1):
-            empty.add((x, y))
+        if ny == target_row:
+            beacons_on_target_row.add(nx)
 
-for _, (nx, ny) in data:
-    if (nx, ny) in empty:
-        empty.remove((nx, ny))
+part1 = None
+part2 = None
 
-print(len([a for a in empty if a[1] == 10]))
+for row in range(0, 4000000):
+    empty_ranges = []
+    for (sx, sy), dist in data:
+        row_delta = dist - abs(row-sy)
+        if row_delta < 0:
+            continue
+        empty_ranges.append((sx-row_delta, sx+row_delta))
+
+    empty_ranges = sorted(empty_ranges)
+    min_x, max_x = empty_ranges[0]
+    for new_min_x, new_max_x in empty_ranges[1:]:
+        if new_min_x > max_x + 1:
+            part2 = (max_x + 1) * 4000000 + row
+            break
+
+        min_x = min(min_x, new_min_x)
+        max_x = max(max_x, new_max_x)
+
+    if row == target_row:
+        part1 = max_x - min_x + 1 - len([x for x in beacons_on_target_row if x >= min_x and x <= max_x])
+        
+    if part1 and part2:
+        break
+
+print(part1, part2)
