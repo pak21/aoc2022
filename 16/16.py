@@ -23,22 +23,16 @@ cave = [
     in cave_dict.items()
 ]
 
-def merge_valves(old_valves, new_valve):
-    return old_valves | (2**new_valve)
-
 def open_valve(state, valve):
-    old_location, old_open, old_flow_rate, old_turns, old_pressure = state
-    return (old_location, merge_valves(old_open, valve), old_flow_rate + cave[valve][0], old_turns + 1, old_pressure + old_flow_rate)
+    location, valves, flow_rate, turns, pressure = state
+    return (location, valves | 2**valve, flow_rate + cave[valve][0], turns + 1, pressure + flow_rate)
 
 def move(state, location):
-    old_location, old_open, old_flow_rate, old_turns, old_pressure = state
-    return (location, old_open, old_flow_rate, old_turns + 1, old_pressure + old_flow_rate)
+    _, valves, flow_rate, turns, pressure = state
+    return (location, valves, flow_rate, turns + 1, pressure + flow_rate)
 
 def moves(state):
     old_location, old_open, old_flow_rate, turns, pressure = state
-
-    if turns == MAX_TURNS:
-        return
 
     for new_location in cave[old_location][1]:
         yield move(state, new_location)
@@ -53,14 +47,21 @@ seen[initial_state[0]][initial_state[1]] = initial_state[4]
 
 best_so_far = 0
 
-def should(state, seen, foo):
+def prune(state, seen):
+    for valves, pressure in seen.items():
+        if (state[1] & ~valves) == 0 and pressure > state[4]:
+            return True
+
+    return False
+
+def should(state, seen):
     result = True
     to_remove = []
 
-    for valves, pressure in seen[state[0]].items():
+    for valves, pressure in seen.items():
 
         extra_valves_new = state[1] & ~valves
-        if extra_valves_new == 0 and pressure >= state[4] + foo:
+        if extra_valves_new == 0 and pressure >= state[4]:
             result = False
             break
 
@@ -68,29 +69,24 @@ def should(state, seen, foo):
         if extra_valves_old == 0 and state[4] > pressure:
             to_remove.append(valves)
 
+    for k in to_remove:
+        del seen[k]
+
     if result:
-        for k in to_remove:
-            del seen[state[0]][k]
+        seen[state[1]] = state[4]
 
     return result
-
-def dump_seen(s):
-    for k, v in s.items():
-        print(k)
-        for k2, v2 in v.items():
-            print(f'{k2:x}, {v2}')
-        print()
 
 while todo:
     state = todo.pop(0)
 
-    if not should(state, seen, 1):
+    if prune(state, seen[state[0]]):
         continue
 
     for ns in moves(state):
-        if should(ns, seen, 0):
-            todo.append(ns)
-            seen[ns[0]][ns[1]] = ns[4]
+        if should(ns, seen[ns[0]]):
+            if ns[3] < MAX_TURNS:
+                todo.append(ns)
             if ns[4] > best_so_far:
                 best_so_far = ns[4]
 
