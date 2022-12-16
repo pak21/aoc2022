@@ -75,13 +75,13 @@ def moves_part2(state):
             yield open_and_open(state, old_location1, old_location2)
 
 if int(sys.argv[2]):
-    initial_state = ((indexes['AA'], indexes['AA']), 0, 0, 1, 0)
+    initial_state = ((indexes['AA'], indexes['AA']), 0, 0, 0, 0)
     moves = moves_part2
-    max_turns = 26 + 1
+    max_turns = 26
 else:
-    initial_state = (indexes['AA'], 0, 0, 1, 0)
+    initial_state = (indexes['AA'], 0, 0, 0, 0)
     moves = moves_part1
-    max_turns = 30 + 1
+    max_turns = 30
 
 todo = [initial_state]
 seen = collections.defaultdict(dict)
