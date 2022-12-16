@@ -74,12 +74,13 @@ def moves_part2(state):
         if old_location1 != old_location2 and not (valves & (2**old_location2)) and cave[old_location2][0] > 0:
             yield open_and_open(state, old_location1, old_location2)
 
+starting_location = indexes['AA']
 if int(sys.argv[2]):
-    initial_state = ((indexes['AA'], indexes['AA']), 0, 0, 0, 0)
+    initial_state = ((starting_location, starting_location), 0, 0, 0, 0)
     moves = moves_part2
     max_turns = 26
 else:
-    initial_state = (indexes['AA'], 0, 0, 0, 0)
+    initial_state = (starting_location, 0, 0, 0, 0)
     moves = moves_part1
     max_turns = 30
 
