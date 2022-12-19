@@ -110,4 +110,3 @@ for i in range(2022):
     current_rock_id = (current_rock_id + 1) % len(rocks)
 
 print(highest+1)
-dump(chamber, highest)

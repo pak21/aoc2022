@@ -54,14 +54,11 @@ def intersect(chamber, rock, x, y):
 
     return False
 
-def dump(chamber, highest):
-    for y in range(highest, -1, -1):
-        l = ''
-        for x in range(0, 7):
-            l += '#' if (x, y) in chamber else '.'
-        print(l)
+completed_hashes = {}
 
-for i in range(1745 + 1010):
+i = 0
+final_i = None
+while i != final_i:
     rock = rocks[current_rock_id]
     x, y = 2, (highest + 3 + rock.shape[0])
 
@@ -123,9 +120,21 @@ for i in range(1745 + 1010):
         chamber = {(x, y - completed - 1) for x, y in chamber if y > completed}
         rows_removed += completed + 1
         highest = max([y for _, y in chamber])
-        if len(chamber) == 18:
-            print(i, rows_removed + highest + 1)
+        height = rows_removed + highest + 1
+
+        if final_i is None:
+            completed_hash = hash((tuple(chamber), jet_id))
+            if completed_hash in completed_hashes:
+                old_i, old_height = completed_hashes[completed_hash]
+                period = i - old_i
+                height_increase = height - old_height
+
+                final_i = i // period * period + 1000000000000 % period
+                print(i, final_i)
+
+            completed_hashes[completed_hash] = (i, height)
 
     current_rock_id = (current_rock_id + 1) % len(rocks)
+    i += 1
 
-print(rows_removed+highest+1)
+print(rows_removed + highest + 1 + (1000000000000 - i) // period * height_increase)
