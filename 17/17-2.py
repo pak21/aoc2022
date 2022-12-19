@@ -54,11 +54,12 @@ def intersect(chamber, rock, x, y):
 
     return False
 
-completed_hashes = {}
+state_hashes = {}
+heights = []
+rock_count = 0
 
-i = 0
-final_i = None
-while i != final_i:
+done = False
+while not done:
     rock = rocks[current_rock_id]
     x, y = 2, (highest + 3 + rock.shape[0])
 
@@ -120,21 +121,22 @@ while i != final_i:
         chamber = {(x, y - completed - 1) for x, y in chamber if y > completed}
         rows_removed += completed + 1
         highest = max([y for _, y in chamber])
-        height = rows_removed + highest + 1
 
-        if final_i is None:
-            completed_hash = hash((tuple(chamber), jet_id))
-            if completed_hash in completed_hashes:
-                old_i, old_height = completed_hashes[completed_hash]
-                period = i - old_i
-                height_increase = height - old_height
+    height = rows_removed + highest + 1
+    heights.append(height)
 
-                final_i = i // period * period + 1000000000000 % period
-                print(i, final_i)
+    state_hash = hash((tuple(chamber), jet_id))
+    if state_hash in state_hashes:
+        old_rock_count = state_hashes[state_hash]
+        period = rock_count - old_rock_count
+        height_change = height - heights[old_rock_count]
+        done = True
 
-            completed_hashes[completed_hash] = (i, height)
+    state_hashes[state_hash] = rock_count
 
     current_rock_id = (current_rock_id + 1) % len(rocks)
-    i += 1
+    rock_count += 1
 
-print(rows_removed + highest + 1 + (1000000000000 - i) // period * height_increase)
+target_count = old_rock_count // period * period + 1000000000000 % period
+increments = (1000000000000 - target_count) // period
+print(heights[target_count-1] + height_change * increments)
