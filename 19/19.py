@@ -12,7 +12,8 @@ with open(sys.argv[1]) as f:
         clay = int(fields[12])
         obsidian = (int(fields[18]), int(fields[21]))
         geode = (int(fields[27]), int(fields[30]))
-        bps.append((ore, clay, obsidian, geode))
+        max_ore_cost = max(ore, clay, obsidian[0], geode[0])
+        bps.append((ore, clay, obsidian, geode, max_ore_cost))
 
 def build_ore(state, ore_robot_cost):
     return (
@@ -59,13 +60,13 @@ def run_minute(state, bp):
 
     yield collected
 
-    if state[1] >= bp[0]:
+    if state[1] >= bp[0] and state[0] < bp[4]:
         yield build_ore(collected, bp[0])
 
-    if state[1] >= bp[1]:
+    if state[1] >= bp[1] and state[2] < bp[2][1]:
         yield build_clay(collected, bp[1])
 
-    if state[1] >= bp[2][0] and state[3] >= bp[2][1]:
+    if state[1] >= bp[2][0] and state[3] >= bp[2][1] and state[4] < bp[3][1]:
         yield build_obsidian(collected, bp[2])
 
     if state[1] >= bp[3][0] and state[5] >= bp[3][1]:
