@@ -45,7 +45,7 @@ def eval_monkey(monkey, monkeys):
                         return lambda t: value2(t // value1)
                     case '/':
                         # value / unknown = target => unknown = value / target
-                        return lambda t: value2(value1 / t)
+                        return lambda t: value2(value1 // t)
                     case _:
                         raise Exception(value1, args[1], value2)
             case (_, builtins.int):
