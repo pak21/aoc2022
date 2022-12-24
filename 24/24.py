@@ -3,49 +3,7 @@
 import collections
 import sys
 
-B_RIGHT = 1
-B_UP = 2
-B_LEFT = 4
-B_DOWN = 8
-
-BLIZZARD_TYPES = {
-    '>': B_RIGHT,
-    '^': B_UP,
-    '<': B_LEFT,
-    'v': B_DOWN,
-}
-
-with open(sys.argv[1]) as f:
-    blizzards = {
-        (y-1, x-1): BLIZZARD_TYPES[c]
-        for y, l in enumerate(f)
-        for x, c in enumerate(l)
-        if c in BLIZZARD_TYPES
-    }
-
-max_y = max([y for y, _ in blizzards]) + 1
-max_x = max([x for _, x in blizzards]) + 1
-
-def move_blizzards(blizzards, max_y, max_x):
-    new_blizzards = collections.defaultdict(int)
-    for (y, x), bs in blizzards.items():
-        if bs & B_RIGHT:
-            new_location = (y, (x + 1) % max_x)
-            new_blizzards[new_location] |= B_RIGHT
-
-        if bs & B_UP:
-            new_location = ((y - 1) % max_y, x)
-            new_blizzards[new_location] |= B_UP
-
-        if bs & B_LEFT:
-            new_location = (y, (x - 1) % max_x)
-            new_blizzards[new_location] |= B_LEFT
-
-        if bs & B_DOWN:
-            new_location = ((y + 1) % max_y, x)
-            new_blizzards[new_location] |= B_DOWN
-
-    return new_blizzards
+BLIZZARD_TYPES = {'>', '^', '<', 'v'}
 
 MOVES = [
     (0, 1),
@@ -54,6 +12,25 @@ MOVES = [
     (1, 0),
     (0, 0),
 ]
+
+def move_blizzards(blizzards, max_y, max_x):
+    new_blizzards = collections.defaultdict(set)
+    for (y, x), bs in blizzards.items():
+        for b in bs:
+            if b == '>':
+                new_location = (y, (x + 1) % max_x)
+            elif b == '^':
+                new_location = ((y - 1) % max_y, x)
+            elif b == '<':
+                new_location = (y, (x - 1) % max_x)
+            elif b == 'v':
+                new_location = ((y + 1) % max_y, x)
+            else:
+                raise Exception(f'Unexpected blizzard type "{b}"')
+
+            new_blizzards[new_location].add(b)
+
+    return new_blizzards
 
 def run(initial_location, initial_turns, blizzards, target_location):
     initial_state = (initial_location, initial_turns)
@@ -87,6 +64,17 @@ def run(initial_location, initial_turns, blizzards, target_location):
                     seen.add(new_state)
 
     raise Exception('No solution found')
+
+with open(sys.argv[1]) as f:
+    blizzards = {
+        (y-1, x-1): {c}
+        for y, l in enumerate(f)
+        for x, c in enumerate(l)
+        if c in BLIZZARD_TYPES
+    }
+
+max_y = max([y for y, _ in blizzards]) + 1
+max_x = max([x for _, x in blizzards]) + 1
 
 start_loc = (-1, 0)
 end_loc = (max_y, max_x - 1)
