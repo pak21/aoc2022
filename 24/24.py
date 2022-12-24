@@ -56,69 +56,42 @@ def move_blizzards(blizzards, max_y, max_x):
 
     return new_blizzards
 
-def dump(blizzards, max_y, max_x):
-    for y in range(0, max_y):
-        l = ''
-        for x in range(0, max_x):
-            c = None
-            n = 0
-            b = blizzards.get((y, x), 0)
-            if b & B_RIGHT:
-                n += 1
-                c = '>'
-            if b & B_UP:
-                n += 1
-                c = '^'
-            if b & B_LEFT:
-                n += 1
-                c = '<'
-            if b & B_DOWN:
-                n += 1
-                c = 'v'
+def run(initial_location, initial_turns, target_location):
+    initial_state = (initial_location, initial_turns)
+    todo = [initial_state]
+    seen = {initial_state}
 
-            match n:
-                case 0:
-                    c2 = '.'
-                case 1:
-                    c2 = c
-                case _:
-                    c2 = str(n)
+    while todo:
+        location, turns = todo.pop(0)
 
-            l += c2
-        print(l)
-    print()
+        try:
+            blizzards = blizzard_states[turns+1]
+        except IndexError:
+            blizzards = move_blizzards(blizzard_states[-1], max_y, max_x)
+            blizzard_states.append(blizzards)
 
-initial_location = (-1, 0)
-initial_state = (initial_location, 0)
-todo = [initial_state]
-seen = {initial_state}
+        for move in MOVES:
+            new_y = location[0] + move[0]
+            new_x = location[1] + move[1]
 
-while todo:
-    location, turns = todo.pop(0)
+            if (new_y, new_x) == target_location:
+                print(f'Reached {target_location} after {turns+1} turns and {len(seen)} states')
+                return turns+1
 
-    try:
-        blizzards = blizzard_states[turns+1]
-    except IndexError:
-        blizzards = move_blizzards(blizzard_states[-1], max_y, max_x)
-        blizzard_states.append(blizzards)
-        print(f'Turn {turns+1}')
+            if (new_y < 0 or new_y == max_y or new_x < 0 or new_x == max_x) and (new_y, new_x) != initial_location:
+                continue
 
-    for move in MOVES:
-        new_y = location[0] + move[0]
-        new_x = location[1] + move[1]
+            if (new_y, new_x) not in blizzards:
+                new_state = ((new_y, new_x), turns + 1)
+                if new_state not in seen:
+                    todo.append(((new_y, new_x), turns + 1))
+                    seen.add(new_state)
 
-        if new_y == max_y and new_x == max_x - 1:
-            print(turns+1)
-            print(len(seen))
-            raise Exception(location, move, turns)
+    raise Exception('No solution found')
 
-        if (new_y < 0 or new_y == max_y or new_x < 0 or new_x == max_x) and (new_y, new_x) != initial_location:
-            continue
+start_loc = (-1, 0)
+end_loc = (max_y, max_x - 1)
 
-        if (new_y, new_x) not in blizzards:
-            new_state = ((new_y, new_x), turns + 1)
-            if new_state not in seen:
-                todo.append(((new_y, new_x), turns + 1))
-                seen.add(new_state)
-
-raise Exception('No solution found')
+part1 = run(start_loc, 0, end_loc)
+part2a = run(end_loc, part1, start_loc)
+part2 = run(start_loc, part2a, end_loc)
