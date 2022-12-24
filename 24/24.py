@@ -17,16 +17,17 @@ def move_blizzards(blizzards, max_y, max_x):
     new_blizzards = collections.defaultdict(set)
     for (y, x), bs in blizzards.items():
         for b in bs:
-            if b == '>':
-                new_location = (y, (x + 1) % max_x)
-            elif b == '^':
-                new_location = ((y - 1) % max_y, x)
-            elif b == '<':
-                new_location = (y, (x - 1) % max_x)
-            elif b == 'v':
-                new_location = ((y + 1) % max_y, x)
-            else:
-                raise Exception(f'Unexpected blizzard type "{b}"')
+            match b:
+                case '>':
+                    new_location = (y, (x + 1) % max_x)
+                case '^':
+                    new_location = ((y - 1) % max_y, x)
+                case '<':
+                    new_location = (y, (x - 1) % max_x)
+                case 'v':
+                    new_location = ((y + 1) % max_y, x)
+                case _:
+                    raise Exception(f'Unexpected blizzard type "{b}"')
 
             new_blizzards[new_location].add(b)
 
