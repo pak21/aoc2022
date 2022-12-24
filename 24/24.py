@@ -27,12 +27,12 @@ def move_blizzards(blizzards, max_y, max_x):
 
     return new_blizzards
 
-def run(initial_location, initial_turns, blizzards, target_location):
-    initial_state = (initial_location, initial_turns)
+def run(initial_location, blizzards, target_location):
+    initial_state = (initial_location, 0)
     todo = [initial_state]
     seen = {initial_state}
 
-    max_turns = initial_turns
+    max_turns = 0
 
     while todo:
         location, turns = todo.pop(0)
@@ -74,8 +74,8 @@ max_x = max([x for _, x in blizzards]) + 1
 start_loc = (-1, 0)
 end_loc = (max_y, max_x - 1)
 
-part1, blizzards = run(start_loc, 0, blizzards, end_loc)
-part2a, blizzards = run(end_loc, part1, blizzards, start_loc)
-part2, _ = run(start_loc, part2a, blizzards, end_loc)
+part1, blizzards = run(start_loc, blizzards, end_loc)
+part2a, blizzards = run(end_loc, blizzards, start_loc)
+part2b, _ = run(start_loc, blizzards, end_loc)
 
-print(part1, part2)
+print(part1, part1 + part2a + part2b)
