@@ -54,7 +54,7 @@ def run(initial_location, initial_turns, blizzards, target_location):
                 print(f'Reached {target_location} after {new_turns} turns (saw {len(seen)} states)')
                 return new_turns, blizzards
 
-            if (new_y < 0 or new_y == max_y or new_x < 0 or new_x == max_x) and (new_y, new_x) != initial_location:
+            if (new_y < 0 or new_y >= max_y or new_x < 0 or new_x >= max_x) and (new_y, new_x) != initial_location:
                 continue
 
             if (new_y, new_x) not in blizzards:
