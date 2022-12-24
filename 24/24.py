@@ -3,8 +3,6 @@
 import collections
 import sys
 
-BLIZZARD_TYPES = {'>', '^', '<', 'v'}
-
 MOVES = [
     (0, 1),
     (-1, 0),
@@ -13,22 +11,18 @@ MOVES = [
     (0, 0),
 ]
 
+BLIZZARD_MOVES = {
+    '>': lambda y, x: (y, (x + 1) % max_x),
+    '^': lambda y, x: ((y - 1) % max_y, x),
+    '<': lambda y, x: (y, (x - 1) % max_x),
+    'v': lambda y, x: ((y + 1) % max_y, x),
+}
+
 def move_blizzards(blizzards, max_y, max_x):
     new_blizzards = collections.defaultdict(set)
     for (y, x), bs in blizzards.items():
         for b in bs:
-            match b:
-                case '>':
-                    new_location = (y, (x + 1) % max_x)
-                case '^':
-                    new_location = ((y - 1) % max_y, x)
-                case '<':
-                    new_location = (y, (x - 1) % max_x)
-                case 'v':
-                    new_location = ((y + 1) % max_y, x)
-                case _:
-                    raise Exception(f'Unexpected blizzard type "{b}"')
-
+            new_location = BLIZZARD_MOVES[b](y, x)
             new_blizzards[new_location].add(b)
 
     return new_blizzards
@@ -71,7 +65,7 @@ with open(sys.argv[1]) as f:
         (y-1, x-1): {c}
         for y, l in enumerate(f)
         for x, c in enumerate(l)
-        if c in BLIZZARD_TYPES
+        if c in BLIZZARD_MOVES
     }
 
 max_y = max([y for y, _ in blizzards]) + 1
