@@ -19,9 +19,7 @@ with open(sys.argv[1]) as f:
                         path.append(path[-1] + '/' + newdir)
         else:
             size, name = l.split()
-            if size == 'dir':
-                pass
-            else:
+            if size != 'dir':
                 for component in path:
                     sizes[component] += int(size)
 
